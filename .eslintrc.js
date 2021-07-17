@@ -42,6 +42,7 @@ module.exports = {
   rules: {
     'indent': ['error', 4],
     'react/jsx-indent': ['error', 4],
+    'react/jsx-indent-props': ['error', 4],
     'no-use-before-define': 'off',
     '@typescript-eslint/no-use-before-define': ['error'],
     'react/jsx-filename-extension': [2, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
