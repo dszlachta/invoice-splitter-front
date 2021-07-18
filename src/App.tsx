@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Route } from 'react-router-dom';
 
 import {
@@ -16,21 +16,22 @@ import {
 } from './logic/contract';
 import OwnerView from './Owner';
 import ClientView from './Client';
-// import logo from './logo.svg';
-import 'antd/dist/antd.css';
+
 import './App.css';
 import StartView from './StartView';
 import { isConnected, State } from './logic/state';
 import { TransactionStatus } from './transaction_status';
 import WalletConnect from './WalletConnect';
+import { useNotifications } from './hooks/useNotifications';
+import { Notifications } from './Notifications';
 
 function App() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [notifications, addNotification] = useNotifications();
     const [appState, setAppState] = useState<State>({ subscribed: false });
     const [walletConnected, setWalletConnected] = useState(false);
     const [ownerConnected, setOwnerConnected] = useState(false);
-    const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>({ status: 'pristine' });
-    const [paymentTransactionStatus, setPaymentTransactionStatus] = useState<TransactionStatus>({ status: 'pristine' });
+    const [addTransactionStatus, setAddTransactionStatus] = useState<TransactionStatus<string>>({ status: 'pristine' });
+    const [paymentTransactionStatus, setPaymentTransactionStatus] = useState<TransactionStatus<boolean>>({ status: 'pristine' });
 
     const onConnectClick = async () => {
         const result = await connect();
@@ -50,37 +51,21 @@ function App() {
         );
     };
 
-    // const sendAddProject = useMemo(() => {
-    //     if (!isConnected(appState)) return () => { };
-
-    //     createAddProject(appState.web3, appState.contract);
-    // }, [appState]);
-    // const callGetProjectDue = useMemo(() => {
-    //     if (!isConnected(appState)) return () => Promise.reject(new Error('uninitialized'));
-
-    //     return createGetProjectDue(appState.web3, appState.contract);
-    // }, [appState]);
-    // const sendPayProject = useMemo(() => {
-    //     if (!isConnected(appState)) return () => { };
-
-    //     return createPayProject(appState.web3, appState.contract);
-    // }, [appState]);
-
     const onAddProject = useCallback(async (options: AddProjectOptions) => {
         if (!isConnected(appState)) throw new Error('Not initialized');
 
         try {
-            setTransactionStatus({ status: 'pending' });
+            setAddTransactionStatus({ status: 'pending' });
 
             const receipt = await createAddProject(appState.web3, appState.contract)(options);
             const { projectId } = receipt.events.ProjectAdded.returnValues;
 
-            setTransactionStatus({
+            setAddTransactionStatus({
                 status: 'success',
                 payload: { projectId },
             });
         } catch (error) {
-            setTransactionStatus({
+            setAddTransactionStatus({
                 status: 'failed',
                 reason: error,
             });
@@ -124,56 +109,70 @@ function App() {
         });
     }, [appState]);
 
+    useEffect(() => {
+        if (process.env.REACT_APP_NETWORK_ID === '1') return;
+
+        addNotification({
+            type: 'warning',
+            message: 'Using a different network than mainnet!',
+        });
+    }, [process.env.REACT_APP_NETWORK_ID]);
+
     return (
         <div className="App">
-            <header className="App-header">
+            <Notifications notifications={notifications} />
+            <header>
                 Invoice splitter
             </header>
 
-            <Route
-                path="/new"
-                render={() => (walletConnected && ownerConnected
-                    ? (
-                        <OwnerView
-                            createInvoice={onAddProject}
-                            transactionStatus={transactionStatus}
-                        />
-                    )
-                    : (
-                        <WalletConnect
-                            onConnect={onConnectClick}
-                        />
-                    )
-                )}
-            />
-            <Route
-                path="/pay/:projectId"
-                render={() => (walletConnected && !ownerConnected
-                    ? (
-                        <ClientView
-                            onPay={onPayProject}
-                            getProjectDue={getProjectDue}
-                            isProjectPaid={isProjectPaid}
-                            transactionStatus={paymentTransactionStatus}
-                        />
-                    )
-                    : (
-                        <WalletConnect
-                            onConnect={onConnectClick}
-                        />
-                    )
-                )}
-            />
-            <Route
-                path="/"
-                exact
-            >
-                <StartView
-                    userConnected={walletConnected}
-                    ownerConnected={ownerConnected}
-                    onConnect={onConnectClick}
+            <main>
+                <Route
+                    path="/new"
+                    render={() => (walletConnected && ownerConnected
+                        ? (
+                            <OwnerView
+                                createInvoice={onAddProject}
+                                transactionStatus={addTransactionStatus}
+                                onNotification={addNotification}
+                            />
+                        )
+                        : (
+                            <WalletConnect
+                                onConnect={onConnectClick}
+                            />
+                        )
+                    )}
                 />
-            </Route>
+                <Route
+                    path="/pay/:projectId"
+                    render={() => (walletConnected && !ownerConnected
+                        ? (
+                            <ClientView
+                                onPay={onPayProject}
+                                getProjectDue={getProjectDue}
+                                isProjectPaid={isProjectPaid}
+                                transactionStatus={paymentTransactionStatus}
+                                onNotification={addNotification}
+                            />
+                        )
+                        : (
+                            <WalletConnect
+                                onConnect={onConnectClick}
+                            />
+                        )
+                    )}
+                />
+                <Route
+                    path="/"
+                    exact
+                >
+                    <StartView
+                        userConnected={walletConnected}
+                        ownerConnected={ownerConnected}
+                        onConnect={onConnectClick}
+                    />
+                </Route>
+            </main>
         </div>
     );
 }

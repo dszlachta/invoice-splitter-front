@@ -8,13 +8,13 @@ type FailedTransactionStatus = {
     status: 'failed',
     reason: Error,
 }
-type SuccessfulTransactionStatus = {
+type SuccessfulTransactionStatus<PayloadValue> = {
     status: 'success',
-    payload: Record<string, unknown>,
+    payload: Record<string, PayloadValue>,
 };
 
-export type TransactionStatus =
+export type TransactionStatus<SuccessPayloadValue> =
     | PristineTransactionStatus
     | PendingTransactionStatus
     | FailedTransactionStatus
-    | SuccessfulTransactionStatus;
+    | SuccessfulTransactionStatus<SuccessPayloadValue>;

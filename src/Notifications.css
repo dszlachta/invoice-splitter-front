@@ -1,0 +1,18 @@
+.notifications {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+
+.notifications .notification {
+    padding: 1rem 1.2rem;
+}
+
+.notifications .notification.warning {
+    background: #f8cbc0;
+}
+
+.notifications .notification.error {
+    background: #f16294;
+}

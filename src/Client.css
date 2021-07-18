@@ -1,0 +1,9 @@
+.payment-details {
+    margin: 0 auto 3.2rem auto;
+}
+
+.payment-details th,
+.payment-details td {
+    text-align: left;
+    padding: .6rem;
+}

@@ -1,0 +1,83 @@
+.owner-view form {
+    width: 68vw;
+    margin: auto;
+}
+
+.owner-view form button[type=submit] {
+    margin-top: 3.2rem;
+}
+
+.owner-view .form-row {
+    display: grid;
+    grid-template:
+        "address percentage button"
+        "addrErr percErr    empty" / 9fr 2fr 1fr;
+    ;
+    gap: 1.2rem;
+}
+
+.owner-view .total-wrapper {
+    font-size: 1.6em;
+    padding: 0 0 3.2rem 0;
+}
+
+.owner-view input.total {
+    margin: 0 1rem;
+}
+
+.owner-view .form-row {
+    padding: 0 0 1.6rem 0;
+}
+
+.owner-view .form-row input.address {
+    grid-area: address;
+}
+
+.owner-view .form-row input.percentage {
+    grid-area: percentage;
+}
+
+.owner-view .form-row button {
+    grid-area: button;
+}
+
+.owner-view .form-row .error-message:first-child {
+    grid-area: addrErr;
+}
+
+.owner-view .form-row .error-message:last-child {
+    grid-area: percErr;
+}
+
+input {
+    border-width: 0 0 var(--border-width);
+    border-style: solid;
+    border-color: black;
+}
+
+input:focus {
+    border-color: var(--color-highlight);
+    outline: none;
+}
+
+button {
+    border: var(--border-width) solid black;
+    padding: 1rem 1.4rem;
+    font-weight: bold;
+    border-radius: var(--border-radius);
+    background: transparent;
+}
+
+button:hover {
+    cursor: pointer;
+    background: var(--color-highlight);
+}
+
+button.primary {
+    border-color: var(--color-border);
+    color: var(--color-border);
+}
+
+.error-message {
+    color: #f16294;
+}

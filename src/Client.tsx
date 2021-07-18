@@ -1,31 +1,37 @@
-import { notification, Result } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Web3 from 'web3';
+
+import Result from './Result';
 
 import {
     GetProjectDue,
     IsProjectPaid,
     PayProjectOptions,
 } from './logic/contract';
+import {
+    NotificationData,
+} from './logic/notification';
 
 import {
     TransactionStatus,
 } from './transaction_status';
 
+import './Client.css';
+
 type ClientProps = {
-    // projectDue: string,
-    // projectId: string,
     onPay: (options: PayProjectOptions) => Promise<void>,
     getProjectDue: GetProjectDue,
     isProjectPaid: IsProjectPaid,
-    transactionStatus: TransactionStatus,
+    transactionStatus: TransactionStatus<boolean>,
+    onNotification: (notification: NotificationData) => void,
 }
 export default function Client({
     onPay,
     getProjectDue,
     isProjectPaid,
     transactionStatus,
+    onNotification,
 }: ClientProps) {
     const { projectId } = useParams<{ projectId: string }>();
     const [due, setDue] = useState('0');
@@ -36,9 +42,9 @@ export default function Client({
         if (transactionStatus.status === 'success') return;
 
         if (transactionStatus.status === 'failed') {
-            notification.error({
-                message: 'Error',
-                description: `Error while paying: ${transactionStatus.reason}`,
+            onNotification({
+                type: 'error',
+                message: `Error while paying: ${transactionStatus.reason}`,
             });
 
             return;
@@ -65,8 +71,10 @@ export default function Client({
         return (
             <Result
                 status="success"
-                title="Paid. Thank you"
-            />
+                title="Transfer was successful"
+            >
+                Thank you!
+            </Result>
         );
     }
 
@@ -75,30 +83,44 @@ export default function Client({
             <Result
                 status="success"
                 title="Already paid"
-                subTitle="You have already paid for this project, thank you!"
-            />
+            >
+                You have already paid for this project, thank you!
+            </Result>
         );
     }
 
     return (
         <section>
             <h1>Pay project</h1>
-            <span>
-                projectId:
-                {projectId}
-            </span>
 
-            <div>
-                Due:
-                <span>
-                    ETH &nbsp;
-                    {fromWei(due)}
-                </span>
-            </div>
+            <table className="payment-details">
+                <tbody>
+                    <tr>
+                        <th>
+                            Project ID
+                        </th>
+                        <td>
+                            <code>{projectId}</code>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Due
+                        </th>
+                        <td>
+                            {fromWei(due)}
+                            &nbsp;
+                            ETH
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
             <button type="button" onClick={() => onPay({ projectId, amount: due })}>
-                Pay ETH &nbsp;
+                Pay&nbsp;
                 {fromWei(due)}
+                &nbsp;
+                ETH
             </button>
         </section>
     );
