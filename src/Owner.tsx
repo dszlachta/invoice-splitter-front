@@ -118,6 +118,7 @@ function OwnerView(
                         className="total"
                         type="number"
                         placeholder="Total due ETH"
+                        step="any"
                         // eslint-disable-next-line react/jsx-props-no-spreading
                         {...register('total', totalInputValidation)}
                     />
@@ -141,7 +142,6 @@ function OwnerView(
                     <div
                         key={field.id}
                         className="form-row"
-                        data-index={index}
                     >
                         <input
                             className="address"
