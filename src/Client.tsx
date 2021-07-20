@@ -71,7 +71,7 @@ export default function Client({
         return (
             <Result
                 status="success"
-                title="Transfer was successful"
+                title="Payment successful"
             >
                 Thank you!
             </Result>

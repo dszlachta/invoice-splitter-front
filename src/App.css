@@ -14,6 +14,39 @@ body {
     font-size: clamp(1.6rem, -1.1rem + 2vw, 3.2rem);
 }
 
+input {
+    border-width: 0 0 var(--border-width);
+    border-style: solid;
+    border-color: black;
+}
+
+input:focus {
+    border-color: var(--color-highlight);
+    outline: none;
+}
+
+button {
+    border: var(--border-width) solid black;
+    padding: 1rem 1.4rem;
+    font-weight: bold;
+    border-radius: var(--border-radius);
+    background: transparent;
+}
+
+button:hover {
+    cursor: pointer;
+    background: var(--color-highlight);
+}
+
+button.primary {
+    border-color: var(--color-border);
+    color: var(--color-border);
+}
+
+.error-message {
+    color: #f16294;
+}
+
 .App {
     text-align: center;
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 
 import { AddProjectOptions } from './logic/contract';
@@ -36,12 +36,19 @@ function OwnerView(
     },
 ) {
     const {
+        control,
         register,
-        unregister,
         handleSubmit,
         formState: { errors },
     } = useForm();
-    const [inputs, setInputs] = useState([`0${Date.now()}`]);
+    const {
+        fields,
+        append,
+        remove,
+    } = useFieldArray({
+        control,
+        name: 'shareholders',
+    });
     const [percentageInvalid, setPercentageInvalid] = useState(false);
 
     useEffect(() => {
@@ -59,13 +66,15 @@ function OwnerView(
         );
     }
 
-    const addRow = () => setInputs([
-        ...inputs,
-        `${inputs.length - 1}${Date.now()}`,
-    ]);
-    const deleteRow = (rowId: string) => setInputs(
-        inputs.filter((someId) => someId !== rowId),
-    );
+    const addRow = () => {
+        append({
+            address: '',
+            percentage: '',
+        });
+    };
+    const deleteRow = (index: number) => {
+        remove(index);
+    };
     const onSubmit: SubmitHandler<FormValues> = (formData) => {
         const [shareholders, shares] = getShareholdersAndShares(formData.shareholders);
 
@@ -82,21 +91,23 @@ function OwnerView(
             shares,
         });
     };
-    const createErrorMessage = (name: string) => (
+    const createErrorMessage = (name: string, className: string) => (
         <ErrorMessage
             errors={errors}
             name={name}
-            as={<p className="error-message" />}
+            as={<p className={`error-message ${className}`} />}
         />
     );
 
     return (
         <section className="owner-view">
-            Create new invoice
+            <p>
+                New invoice
+            </p>
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="total-wrapper">
-                    Requesting
+                    Request
                     <input
                         className="total"
                         type="number"
@@ -106,7 +117,7 @@ function OwnerView(
                     />
                     ETH
                 </div>
-                {createErrorMessage('total')}
+                {createErrorMessage('total', 'total')}
 
                 <p>
                     and forward payment to:
@@ -120,10 +131,11 @@ function OwnerView(
                     </p>
                 )}
 
-                {inputs.map((inputId, index) => (
+                {fields.map((field, index) => (
                     <div
-                        key={inputId}
+                        key={field.id}
                         className="form-row"
+                        data-index={index}
                     >
                         <input
                             className="address"
@@ -140,13 +152,13 @@ function OwnerView(
                         />
                         <button
                             type="button"
-                            disabled={inputs.length < 2}
-                            onClick={() => { unregister(`shareholders.${index}`); deleteRow(inputId); }}
+                            disabled={fields.length < 2}
+                            onClick={() => deleteRow(index)}
                         >
                             Remove
                         </button>
-                        {createErrorMessage(`shareholders.${index}.address`)}
-                        {createErrorMessage(`shareholders.${index}.percentage`)}
+                        {createErrorMessage(`shareholders.${index}.address`, 'address')}
+                        {createErrorMessage(`shareholders.${index}.percentage`, 'percentage')}
                     </div>
                 ))}
                 <button

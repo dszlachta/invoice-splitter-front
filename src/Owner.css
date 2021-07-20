@@ -17,8 +17,12 @@
 }
 
 .owner-view .total-wrapper {
-    font-size: 1.6em;
     padding: 0 0 3.2rem 0;
+    font-size: 1.6em;
+}
+
+.owner-view .total-wrapper input {
+    font-size: 1em;
 }
 
 .owner-view input.total {
@@ -41,43 +45,10 @@
     grid-area: button;
 }
 
-.owner-view .form-row .error-message:first-child {
+.owner-view .form-row .error-message.address {
     grid-area: addrErr;
 }
 
-.owner-view .form-row .error-message:last-child {
+.owner-view .form-row .error-message.percentage {
     grid-area: percErr;
-}
-
-input {
-    border-width: 0 0 var(--border-width);
-    border-style: solid;
-    border-color: black;
-}
-
-input:focus {
-    border-color: var(--color-highlight);
-    outline: none;
-}
-
-button {
-    border: var(--border-width) solid black;
-    padding: 1rem 1.4rem;
-    font-weight: bold;
-    border-radius: var(--border-radius);
-    background: transparent;
-}
-
-button:hover {
-    cursor: pointer;
-    background: var(--color-highlight);
-}
-
-button.primary {
-    border-color: var(--color-border);
-    color: var(--color-border);
-}
-
-.error-message {
-    color: #f16294;
 }

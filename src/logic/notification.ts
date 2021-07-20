@@ -6,6 +6,7 @@ export type Notification = {
 type NotificationType = 'error' | 'warning';
 export type NotificationData = Omit<Notification, 'id'>;
 
+// Poor man's ids
 let notificationCounter = 0;
 
 export function createNotification({ type, message }: NotificationData): Notification {

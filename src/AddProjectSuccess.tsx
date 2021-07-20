@@ -14,7 +14,7 @@ export function AddProjectSuccess({ projectId }: AddProjectSuccessProps) {
             Payment link (send it to the client):
             <div>
                 {window.location.origin}
-                /
+                /pay/
                 {projectId}
             </div>
         </Result>
