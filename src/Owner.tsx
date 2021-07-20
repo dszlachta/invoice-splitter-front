@@ -50,6 +50,21 @@ function OwnerView(
         name: 'shareholders',
     });
     const [percentageInvalid, setPercentageInvalid] = useState(false);
+    const addRow = () => {
+        append({
+            address: '',
+            percentage: '',
+        });
+    };
+    const deleteRow = (index: number) => {
+        remove(index);
+    };
+
+    useEffect(() => {
+        if (fields.length) return;
+
+        addRow();
+    }, []);
 
     useEffect(() => {
         if (transactionStatus.status !== 'failed') return;
@@ -66,15 +81,6 @@ function OwnerView(
         );
     }
 
-    const addRow = () => {
-        append({
-            address: '',
-            percentage: '',
-        });
-    };
-    const deleteRow = (index: number) => {
-        remove(index);
-    };
     const onSubmit: SubmitHandler<FormValues> = (formData) => {
         const [shareholders, shares] = getShareholdersAndShares(formData.shareholders);
 
